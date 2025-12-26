@@ -121,22 +121,24 @@ export const ChatInput = ({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={disabled}
+            placeholder={disabled ? "AI is responding... Type to queue your next message" : placeholder}
             rows={1}
-            className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 disabled:cursor-not-allowed disabled:text-gray-500 max-h-20 overflow-hidden shadow-sm transition-all text-sm"
+            className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 max-h-20 overflow-hidden shadow-sm transition-all text-sm"
             style={{ minHeight: '38px' }}
           />
           <button
             onClick={handleSend}
-            disabled={disabled || !input.trim() || !repoUrl.trim() || !!repoError}
-            title={disabled ? placeholder : 'Send message'}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-500 dark:to-blue-600 text-white p-2 rounded-lg hover:from-blue-700 hover:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-600 dark:disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md disabled:shadow-sm flex-shrink-0"
+            disabled={!input.trim() || !repoUrl.trim() || !!repoError}
+            title={disabled ? "Queue message" : "Send message"}
+            className="bg-blue-600 dark:bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md disabled:shadow-sm flex-shrink-0"
           >
             <Send className="w-4 h-4" />
           </button>
         </div>
-        {disabled && <p className="text-blue-600 dark:text-blue-400 text-xs">⏳ Processing...</p>}
+        {disabled && <p className="text-blue-600 dark:text-blue-400 text-xs flex items-center gap-1">
+          <span className="inline-block w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></span>
+          AI is responding...
+        </p>}
       </div>
     </div>
   );

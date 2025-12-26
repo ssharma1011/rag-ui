@@ -27,30 +27,30 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
   const getStatusColor = () => {
     switch (message.status) {
       case 'RUNNING':
-        return 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200';
+        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
       case 'COMPLETED':
-        return 'bg-gradient-to-br from-green-50 to-green-100 border-green-200';
+        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
       case 'FAILED':
-        return 'bg-gradient-to-br from-red-50 to-red-100 border-red-200';
+        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
       case 'WAITING_FOR_DEVELOPER':
-        return 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200';
+        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
       default:
-        return 'bg-white border-gray-200';
+        return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
     }
   };
 
   return (
-    <div className="flex justify-start mb-6 group">
-      <div className="flex items-start gap-3 max-w-3xl">
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center shadow-md">
-          <Bot className="w-4 h-4 text-white" />
+    <div className="flex justify-start mb-4 group">
+      <div className="flex items-start gap-2 max-w-3xl">
+        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 dark:bg-gray-600 flex items-center justify-center">
+          <Bot className="w-3.5 h-3.5 text-white" />
         </div>
         <div className="flex-1">
-          <div className={`border-2 rounded-2xl rounded-tl-sm px-5 py-4 shadow-md group-hover:shadow-lg transition-shadow ${getStatusColor()}`}>
+          <div className={`border rounded-lg px-4 py-3 ${getStatusColor()}`}>
             {/* Agent Badge */}
             {message.agent && (
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-300">
-                <span className="text-sm font-bold text-gray-800 bg-white px-2 py-1 rounded-md shadow-sm">
+              <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 px-2 py-0.5 rounded">
                   {message.agent}
                 </span>
                 {getStatusIcon()}
@@ -59,21 +59,21 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
 
           {/* Progress Bar */}
           {message.progress !== undefined && message.progress > 0 && (
-            <div className="mb-4">
-              <div className="w-full bg-gray-300 rounded-full h-2.5 shadow-inner">
+            <div className="mb-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                 <div
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-500 shadow-sm"
+                  className="bg-blue-600 dark:bg-blue-500 h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${message.progress * 100}%` }}
                 />
               </div>
-              <div className="text-xs font-semibold text-gray-700 mt-1.5">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                 {Math.round(message.progress * 100)}% complete
               </div>
             </div>
           )}
 
           {/* Message Content with Markdown */}
-          <div className="prose prose-sm max-w-none">
+          <div className="prose prose-sm dark:prose-invert max-w-none">
             <ReactMarkdown
               components={{
                 code(props) {
@@ -90,7 +90,7 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
                       {String(children).replace(/\n$/, '')}
                     </SyntaxHighlighter>
                   ) : (
-                    <code className="bg-gray-200 px-1 py-0.5 rounded text-sm" {...rest}>
+                    <code className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-1.5 py-0.5 rounded text-xs font-mono" {...rest}>
                       {children}
                     </code>
                   );
