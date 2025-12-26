@@ -27,13 +27,13 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
   const getStatusColor = () => {
     switch (message.status) {
       case 'RUNNING':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+        return 'bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-800';
       case 'COMPLETED':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+        return 'bg-white dark:bg-gray-800 border-green-200 dark:border-green-800';
       case 'FAILED':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+        return 'bg-white dark:bg-gray-800 border-red-200 dark:border-red-800';
       case 'WAITING_FOR_DEVELOPER':
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
+        return 'bg-white dark:bg-gray-800 border-yellow-200 dark:border-yellow-800';
       default:
         return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
     }
@@ -73,7 +73,7 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
           )}
 
           {/* Message Content with Markdown */}
-          <div className="prose prose-sm dark:prose-invert max-w-none">
+          <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 dark:text-gray-100">
             <ReactMarkdown
               components={{
                 code(props) {
@@ -90,7 +90,7 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
                       {String(children).replace(/\n$/, '')}
                     </SyntaxHighlighter>
                   ) : (
-                    <code className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-1.5 py-0.5 rounded text-xs font-mono" {...rest}>
+                    <code className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-1.5 py-0.5 rounded text-xs font-mono" {...rest}>
                       {children}
                     </code>
                   );
