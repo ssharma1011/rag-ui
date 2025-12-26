@@ -1,5 +1,5 @@
 import { useState, KeyboardEvent, useRef, useEffect } from 'react';
-import { Send, Github, ChevronDown, ChevronUp } from 'lucide-react';
+import { Send, Github, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { isValidGitHubUrl } from '../utils/validation';
 import { detectLogs, countLogLines, extractRequirement, extractLogs } from '../utils/logDetection';
 import { FileUpload } from './FileUpload';
@@ -25,6 +25,7 @@ export const ChatInput = ({
   const [logFiles, setLogFiles] = useState<File[]>([]);
   const [detectedLogs, setDetectedLogs] = useState<string | null>(null);
   const [showDetectedLogs, setShowDetectedLogs] = useState(false);
+  const [showFileUpload, setShowFileUpload] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load saved repo URL from localStorage on mount if no initial URL provided
@@ -104,6 +105,7 @@ export const ChatInput = ({
       setLogFiles([]);
       setDetectedLogs(null);
       setShowDetectedLogs(false);
+      setShowFileUpload(false);
 
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -217,12 +219,30 @@ export const ChatInput = ({
           </div>
         )}
 
-        {/* File upload */}
-        <FileUpload
-          files={logFiles}
-          onFilesChange={setLogFiles}
-          disabled={disabled}
-        />
+        {/* File upload toggle and area */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFileUpload(!showFileUpload)}
+            className="text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            {showFileUpload ? 'Hide' : 'Upload'} log files
+            {logFiles.length > 0 && (
+              <span className="bg-blue-600 text-white px-1.5 py-0.5 rounded-full text-xs font-medium">
+                {logFiles.length}
+              </span>
+            )}
+            {showFileUpload ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+        </div>
+
+        {showFileUpload && (
+          <FileUpload
+            files={logFiles}
+            onFilesChange={setLogFiles}
+            disabled={disabled}
+          />
+        )}
 
         {disabled && <p className="text-blue-600 dark:text-blue-400 text-xs flex items-center gap-1">
           <span className="inline-block w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></span>

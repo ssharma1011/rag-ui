@@ -90,7 +90,7 @@ export const AgentMessage = ({ message }: AgentMessageProps) => {
                       {String(children).replace(/\n$/, '')}
                     </SyntaxHighlighter>
                   ) : (
-                    <code className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-1.5 py-0.5 rounded text-xs font-mono" {...rest}>
+                    <code className="bg-gray-700 dark:bg-gray-600 text-white px-1.5 py-0.5 rounded text-xs font-mono" {...rest}>
                       {children}
                     </code>
                   );
