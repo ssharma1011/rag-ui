@@ -83,19 +83,19 @@ export const ChatInput = ({
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-6 shadow-lg">
-      <div className="max-w-4xl mx-auto space-y-4">
+    <div className="border-t border-gray-200 bg-white p-4 shadow-lg">
+      <div className="max-w-4xl mx-auto space-y-3">
         {/* Repository URL Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-            <Github className="w-4 h-4" />
+          <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-2">
+            <Github className="w-3.5 h-3.5" />
             Repository URL
             <span className="text-red-500">*</span>
             {repoUrl && !repoError && (
               <span className="text-green-600 text-xs font-normal ml-auto">✓ Valid</span>
             )}
             {isRepoLocked && (
-              <span className="text-blue-600 text-xs font-normal ml-auto">🔒 Locked for this chat</span>
+              <span className="text-blue-600 text-xs font-normal ml-auto">🔒 Locked</span>
             )}
           </label>
           <input
@@ -104,7 +104,7 @@ export const ChatInput = ({
             onChange={(e) => setRepoUrl(e.target.value)}
             placeholder="https://github.com/username/repository"
             disabled={disabled || isRepoLocked}
-            className={`w-full px-4 py-2.5 rounded-lg border-2 bg-white text-gray-900 focus:outline-none focus:ring-2 transition-all ${
+            className={`w-full px-3 py-2 rounded-lg border-2 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 transition-all ${
               repoError
                 ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
                 : isRepoLocked
@@ -113,25 +113,25 @@ export const ChatInput = ({
             } disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500`}
           />
           {repoError && (
-            <p className="text-red-600 text-xs mt-1.5 flex items-center gap-1">
+            <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
               <span>⚠️</span>
               {repoError}
             </p>
           )}
           {!repoError && repoUrl && !isRepoLocked && (
-            <p className="text-gray-500 text-xs mt-1.5">
+            <p className="text-gray-500 text-xs mt-1">
               This repository will be used for the entire chat session
             </p>
           )}
           {isRepoLocked && (
-            <p className="text-blue-600 text-xs mt-1.5">
+            <p className="text-blue-600 text-xs mt-1">
               To work on a different repository, start a new chat
             </p>
           )}
         </div>
 
         {/* Message Input */}
-        <div className="flex items-end space-x-3">
+        <div className="flex items-center gap-3">
           <textarea
             ref={textareaRef}
             value={input}
@@ -140,18 +140,19 @@ export const ChatInput = ({
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="flex-1 resize-none rounded-2xl border-2 border-gray-300 px-5 py-3.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 max-h-32 overflow-y-auto shadow-sm transition-all text-base leading-relaxed"
+            className="flex-1 resize-none rounded-xl border-2 border-gray-300 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 max-h-24 overflow-hidden shadow-sm transition-all text-sm"
+            style={{ minHeight: '44px' }}
           />
           <button
             onClick={handleSend}
             disabled={disabled || !input.trim() || !repoUrl.trim() || !!repoError}
             title={disabled ? placeholder : 'Send message'}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3.5 rounded-2xl hover:from-blue-700 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg disabled:shadow-sm transform hover:scale-105 active:scale-95"
+            className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3 rounded-xl hover:from-blue-700 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg disabled:shadow-sm flex-shrink-0"
           >
             <Send className="w-5 h-5" />
           </button>
         </div>
-        <div className="mt-2.5 text-xs text-gray-500 flex items-center justify-between">
+        <div className="text-xs text-gray-500 flex items-center justify-between">
           <span>Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-xs">Enter</kbd> to send, <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-xs">Shift+Enter</kbd> for new line</span>
           {disabled && <span className="text-blue-600 font-medium">⏳ Processing...</span>}
         </div>
