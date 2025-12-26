@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage, WorkflowStatusResponse } from '../types/workflow';
 import { workflowApi } from '../services/api';
 import { useWorkflowPolling } from '../hooks/useWorkflowPolling';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Unlock } from 'lucide-react';
 
 // Helper function to safely parse timestamps
 const parseTimestamp = (timestamp: string | Date): Date => {
@@ -19,6 +19,8 @@ export const ChatContainer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleStatusUpdate = useCallback((status: WorkflowStatusResponse) => {
+    console.log('📥 Status update received:', status);
+
     // Update or add agent message
     setMessages((prevMessages) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
@@ -56,15 +58,22 @@ export const ChatContainer = () => {
     });
 
     // Update processing state based on workflow status
+    console.log('🔄 Current status:', status.status);
+
     if (status.status === 'COMPLETED' || status.status === 'FAILED') {
+      console.log('✅ Workflow ended, unlocking input');
       setIsProcessing(false);
       setConversationId(null);
     } else if (status.status === 'WAITING_FOR_DEVELOPER') {
-      // Allow user to respond when workflow is waiting
+      console.log('⏸️  Waiting for developer, unlocking input');
       setIsProcessing(false);
     } else if (status.status === 'RUNNING') {
-      // Keep processing state while running
+      console.log('🏃 Workflow running, keeping input locked');
       setIsProcessing(true);
+    } else {
+      // Fallback: if status is unknown but we got a message, unlock input
+      console.log('❓ Unknown status, unlocking input as fallback');
+      setIsProcessing(false);
     }
   }, []);
 
@@ -130,17 +139,65 @@ export const ChatContainer = () => {
       );
       if (!confirmed) return;
     }
+    // Save current conversation to history before clearing
+    if (messages.length > 0 && conversationId) {
+      saveConversationToHistory();
+    }
     setMessages([]);
     setConversationId(null);
     setIsProcessing(false);
   };
+
+  const handleForceUnlock = () => {
+    console.log('🔓 Force unlocking input');
+    setIsProcessing(false);
+  };
+
+  const saveConversationToHistory = () => {
+    try {
+      const history = JSON.parse(localStorage.getItem('conversationHistory') || '[]');
+      const conversation = {
+        id: conversationId,
+        timestamp: new Date().toISOString(),
+        messages: messages,
+        preview: messages[0]?.content?.substring(0, 50) + '...' || 'New conversation',
+      };
+      history.unshift(conversation);
+      // Keep only last 20 conversations
+      localStorage.setItem('conversationHistory', JSON.stringify(history.slice(0, 20)));
+    } catch (error) {
+      console.error('Failed to save conversation history:', error);
+    }
+  };
+
+  // Auto-save conversation periodically
+  useEffect(() => {
+    if (messages.length > 0 && conversationId) {
+      const timer = setTimeout(() => {
+        saveConversationToHistory();
+      }, 5000); // Save every 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [messages, conversationId]);
 
   return (
     <div className="flex flex-col h-full">
       {/* New Chat Button - Show when there are messages */}
       {messages.length > 0 && (
         <div className="bg-white border-b border-gray-200 px-4 py-2">
-          <div className="max-w-4xl mx-auto flex justify-end">
+          <div className="max-w-4xl mx-auto flex justify-between items-center">
+            <div className="flex gap-2">
+              {isProcessing && (
+                <button
+                  onClick={handleForceUnlock}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all shadow-sm"
+                  title="Click if input is stuck locked"
+                >
+                  <Unlock className="w-3 h-3" />
+                  Force Unlock
+                </button>
+              )}
+            </div>
             <button
               onClick={handleNewChat}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm hover:shadow-md"
