@@ -4,7 +4,8 @@ import { workflowApi } from '../services/api';
 import { useWorkflowPolling } from '../hooks/useWorkflowPolling';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import { RefreshCw, Github } from 'lucide-react';
+import { ConversationHistory } from './ConversationHistory';
+import { RefreshCw, Github, History } from 'lucide-react';
 
 // Helper function to safely parse timestamps
 const parseTimestamp = (timestamp: string | Date): Date => {
@@ -19,6 +20,7 @@ export const ChatContainer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [repoUrl, setRepoUrl] = useState<string>('');
   const [isRepoLocked, setIsRepoLocked] = useState<boolean>(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
 
   const handleStatusUpdate = useCallback((status: WorkflowStatusResponse) => {
     console.log('📥 Status update received:', status);
@@ -167,20 +169,45 @@ export const ChatContainer = () => {
   };
 
   const saveConversationToHistory = () => {
+    if (!conversationId || messages.length === 0) return;
+
     try {
       const history = JSON.parse(localStorage.getItem('conversationHistory') || '[]');
+
+      // Remove existing conversation with same ID if it exists (update scenario)
+      const filteredHistory = history.filter((c: any) => c.id !== conversationId);
+
       const conversation = {
         id: conversationId,
+        repoUrl: repoUrl,
         timestamp: new Date().toISOString(),
         messages: messages,
-        preview: messages[0]?.content?.substring(0, 50) + '...' || 'New conversation',
       };
-      history.unshift(conversation);
-      // Keep only last 20 conversations
-      localStorage.setItem('conversationHistory', JSON.stringify(history.slice(0, 20)));
+
+      filteredHistory.unshift(conversation);
+
+      // Keep only last 50 conversations
+      localStorage.setItem('conversationHistory', JSON.stringify(filteredHistory.slice(0, 50)));
+      console.log('💾 Conversation saved to history');
     } catch (error) {
       console.error('Failed to save conversation history:', error);
     }
+  };
+
+  const restoreConversation = (conversation: any) => {
+    // Save current conversation before restoring
+    if (conversationId && messages.length > 0) {
+      saveConversationToHistory();
+    }
+
+    // Restore the conversation
+    setMessages(conversation.messages);
+    setConversationId(conversation.id);
+    setRepoUrl(conversation.repoUrl);
+    setIsRepoLocked(true);
+    setIsProcessing(false);
+
+    console.log('📂 Conversation restored:', conversation.id);
   };
 
   // Auto-save conversation periodically
@@ -195,7 +222,7 @@ export const ChatContainer = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header with Current Repository and New Chat Button */}
+      {/* Header with Current Repository and Action Buttons */}
       {isRepoLocked && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200 px-6 py-3">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -208,14 +235,38 @@ export const ChatContainer = () => {
                 <p className="text-sm font-semibold text-gray-800">{repoUrl}</p>
               </div>
             </div>
-            <button
-              onClick={handleNewChat}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all shadow-sm hover:shadow-md border border-blue-200"
-            >
-              <RefreshCw className="w-4 h-4" />
-              New Chat
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsHistoryOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                title="View conversation history"
+              >
+                <History className="w-4 h-4" />
+                History
+              </button>
+              <button
+                onClick={handleNewChat}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all shadow-sm hover:shadow-md border border-blue-200"
+              >
+                <RefreshCw className="w-4 h-4" />
+                New Chat
+              </button>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* History button when no active conversation */}
+      {!isRepoLocked && messages.length === 0 && (
+        <div className="absolute top-4 right-4 z-10">
+          <button
+            onClick={() => setIsHistoryOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-md hover:shadow-lg border border-gray-200"
+            title="View conversation history"
+          >
+            <History className="w-4 h-4" />
+            History
+          </button>
         </div>
       )}
 
@@ -230,6 +281,14 @@ export const ChatContainer = () => {
         }
         initialRepoUrl={repoUrl}
         isRepoLocked={isRepoLocked}
+      />
+
+      {/* Conversation History Sidebar */}
+      <ConversationHistory
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onRestore={restoreConversation}
+        currentConversationId={conversationId}
       />
     </div>
   );
