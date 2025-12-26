@@ -36,28 +36,32 @@ export const ChatInput = ({ onSend, disabled, placeholder = 'Type your message..
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
-      <div className="max-w-4xl mx-auto flex items-end space-x-2">
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={disabled}
-          rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed max-h-32 overflow-y-auto"
-        />
-        <button
-          onClick={handleSend}
-          disabled={disabled || !input.trim()}
-          className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-        >
-          <Send className="w-5 h-5" />
-        </button>
-      </div>
-      <div className="max-w-4xl mx-auto mt-2 text-xs text-gray-500">
-        Press Enter to send, Shift+Enter for new line
+    <div className="border-t border-gray-200 bg-gradient-to-b from-gray-50 to-white p-6 shadow-lg">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-end space-x-3">
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={disabled}
+            rows={1}
+            className="flex-1 resize-none rounded-2xl border-2 border-gray-300 px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 max-h-32 overflow-y-auto shadow-sm transition-all text-base leading-relaxed"
+          />
+          <button
+            onClick={handleSend}
+            disabled={disabled || !input.trim()}
+            title={disabled ? placeholder : 'Send message'}
+            className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3.5 rounded-2xl hover:from-blue-700 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg disabled:shadow-sm transform hover:scale-105 active:scale-95"
+          >
+            <Send className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="mt-2.5 text-xs text-gray-500 flex items-center justify-between">
+          <span>Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-xs">Enter</kbd> to send, <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-xs">Shift+Enter</kbd> for new line</span>
+          {disabled && <span className="text-blue-600 font-medium">⏳ Processing...</span>}
+        </div>
       </div>
     </div>
   );
