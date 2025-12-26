@@ -17,9 +17,11 @@ export const MetricsDashboard = () => {
     try {
       const data = await metricsApi.getSystemMetrics();
       setMetrics(data);
-    } catch (err) {
-      setError('Failed to load metrics');
-      console.error(err);
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.error || err?.message || 'Failed to load metrics';
+      const statusCode = err?.response?.status;
+      setError(`${errorMsg}${statusCode ? ` (${statusCode})` : ''}`);
+      console.error('Metrics fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -50,8 +52,21 @@ export const MetricsDashboard = () => {
 
   if (error || !metrics) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-red-500">{error || 'No data available'}</div>
+      <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+        <div className="text-center p-8">
+          <div className="text-red-500 dark:text-red-400 text-lg mb-4">
+            {error || 'No data available'}
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+            The metrics endpoint might not be available yet.
+          </p>
+          <button
+            onClick={fetchMetrics}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

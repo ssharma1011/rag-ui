@@ -224,44 +224,39 @@ export const ChatContainer = () => {
     <div className="flex flex-col h-full">
       {/* Header with Current Repository and Action Buttons */}
       {isRepoLocked && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200 px-6 py-3">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b border-blue-200 dark:border-gray-700 px-6 py-2.5 transition-colors">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-white p-2 rounded-lg shadow-sm">
-                <Github className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 font-medium">Working on</p>
-                <p className="text-sm font-semibold text-gray-800">{repoUrl}</p>
-              </div>
-            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsHistoryOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all shadow-sm border border-gray-200 dark:border-gray-600"
                 title="View conversation history"
               >
                 <History className="w-4 h-4" />
                 History
               </button>
-              <button
-                onClick={handleNewChat}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all shadow-sm hover:shadow-md border border-blue-200"
-              >
-                <RefreshCw className="w-4 h-4" />
-                New Chat
-              </button>
+              <div className="flex items-center gap-2 ml-2">
+                <Github className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <p className="text-xs text-gray-800 dark:text-gray-200 font-medium truncate max-w-md">{repoUrl}</p>
+              </div>
             </div>
+            <button
+              onClick={handleNewChat}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 transition-all shadow-sm border border-blue-200 dark:border-gray-600"
+            >
+              <RefreshCw className="w-4 h-4" />
+              New Chat
+            </button>
           </div>
         </div>
       )}
 
       {/* History button when no active conversation */}
       {!isRepoLocked && messages.length === 0 && (
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 left-4 z-10">
           <button
             onClick={() => setIsHistoryOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-md hover:shadow-lg border border-gray-200"
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
             title="View conversation history"
           >
             <History className="w-4 h-4" />

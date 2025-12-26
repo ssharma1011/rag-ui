@@ -108,9 +108,9 @@ export const ConversationHistory = ({
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col">
+      <div className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl z-50 flex flex-col transition-colors">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-gray-700 dark:to-gray-800 text-white p-4 flex items-center justify-between transition-colors">
           <div className="flex items-center gap-2">
             <History className="w-5 h-5" />
             <h2 className="text-lg font-semibold">Conversation History</h2>
@@ -126,7 +126,7 @@ export const ConversationHistory = ({
         {/* Conversation List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {conversations.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No saved conversations yet</p>
               <p className="text-xs mt-1">Start chatting to create history</p>
@@ -141,29 +141,29 @@ export const ConversationHistory = ({
                 }}
                 className={`p-3 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
                   conv.id === currentConversationId
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300 bg-white'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 bg-white dark:bg-gray-700'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-medium text-sm text-gray-800 line-clamp-2">
+                  <h3 className="font-medium text-sm text-gray-800 dark:text-gray-200 line-clamp-2">
                     {getConversationTitle(conv)}
                   </h3>
                   <button
                     onClick={(e) => deleteConversation(conv.id, e)}
-                    className="p-1 hover:bg-red-100 rounded text-gray-400 hover:text-red-600 transition-all flex-shrink-0"
+                    className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all flex-shrink-0"
                     title="Delete conversation"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 mb-1">
                   <Github className="w-3 h-3" />
                   <span className="truncate">{getRepoName(conv.repoUrl)}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-1">
                     <MessageSquare className="w-3 h-3" />
                     <span>{conv.messages.length} messages</span>
@@ -175,8 +175,8 @@ export const ConversationHistory = ({
                 </div>
 
                 {conv.id === currentConversationId && (
-                  <div className="mt-2 pt-2 border-t border-blue-200">
-                    <span className="text-xs text-blue-600 font-medium">Current conversation</span>
+                  <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+                    <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">Current conversation</span>
                   </div>
                 )}
               </div>
@@ -186,8 +186,8 @@ export const ConversationHistory = ({
 
         {/* Footer */}
         {conversations.length > 0 && (
-          <div className="border-t border-gray-200 p-4 bg-gray-50">
-            <p className="text-xs text-gray-600 text-center">
+          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900 transition-colors">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               {conversations.length} saved conversation{conversations.length !== 1 ? 's' : ''}
             </p>
           </div>
