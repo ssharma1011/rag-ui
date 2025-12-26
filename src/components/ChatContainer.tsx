@@ -105,7 +105,12 @@ export const ChatContainer = () => {
     onError: handleError,
   });
 
-  const handleSendMessage = async (content: string, messageRepoUrl: string) => {
+  const handleSendMessage = async (
+    content: string,
+    messageRepoUrl: string,
+    logsPasted?: string,
+    logFiles?: File[]
+  ) => {
     // Add user message
     const userMessage: ChatMessage = {
       id: `${Date.now()}-user`,
@@ -123,10 +128,12 @@ export const ChatContainer = () => {
         const status = await workflowApi.respondToWorkflow(conversationId, content);
         handleStatusUpdate(status);
       } else {
-        // Start new workflow with repoUrl
+        // Start new workflow with repoUrl and logs
         const status = await workflowApi.startWorkflow({
           requirement: content,
           repoUrl: messageRepoUrl.trim(),
+          logsPasted,
+          logFiles,
         });
         setConversationId(status.conversationId);
         setRepoUrl(messageRepoUrl.trim()); // Store the repo URL

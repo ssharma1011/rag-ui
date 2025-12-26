@@ -4,6 +4,8 @@ export interface WorkflowRequest {
   requirement: string;
   repoUrl: string;  // Changed from repoName to repoUrl
   targetClass?: string;
+  logsPasted?: string;  // Logs pasted in chat
+  logFiles?: File[];    // Uploaded log files
 }
 
 export interface WorkflowStatusResponse {
