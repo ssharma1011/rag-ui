@@ -36,7 +36,7 @@ export const ChatInput = ({ onSend, disabled, placeholder = 'Type your message..
   };
 
   return (
-    <div className="border-t border-gray-200 bg-gradient-to-b from-gray-50 to-white p-6 shadow-lg">
+    <div className="border-t border-gray-200 bg-white p-6 shadow-lg">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-end space-x-3">
           <textarea
@@ -47,7 +47,7 @@ export const ChatInput = ({ onSend, disabled, placeholder = 'Type your message..
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="flex-1 resize-none rounded-2xl border-2 border-gray-300 px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 max-h-32 overflow-y-auto shadow-sm transition-all text-base leading-relaxed"
+            className="flex-1 resize-none rounded-2xl border-2 border-gray-300 px-5 py-3.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 max-h-32 overflow-y-auto shadow-sm transition-all text-base leading-relaxed"
           />
           <button
             onClick={handleSend}

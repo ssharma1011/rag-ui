@@ -2,7 +2,7 @@ export type WorkflowStatus = 'RUNNING' | 'WAITING_FOR_DEVELOPER' | 'COMPLETED' |
 
 export interface WorkflowRequest {
   requirement: string;
-  repoName: string;
+  repoUrl: string;  // Changed from repoName to repoUrl
   targetClass?: string;
 }
 
