@@ -4,7 +4,7 @@ import { workflowApi } from '../services/api';
 import { useWorkflowPolling } from '../hooks/useWorkflowPolling';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Github } from 'lucide-react';
 
 // Helper function to safely parse timestamps
 const parseTimestamp = (timestamp: string | Date): Date => {
@@ -18,7 +18,7 @@ export const ChatContainer = () => {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [repoUrl, setRepoUrl] = useState<string>('');
-  const [showRepoInput, setShowRepoInput] = useState<boolean>(true);
+  const [isRepoLocked, setIsRepoLocked] = useState<boolean>(false);
 
   const handleStatusUpdate = useCallback((status: WorkflowStatusResponse) => {
     console.log('📥 Status update received:', status);
@@ -103,22 +103,7 @@ export const ChatContainer = () => {
     onError: handleError,
   });
 
-  const handleSendMessage = async (content: string) => {
-    // Validate repoUrl for new conversations
-    if (!conversationId && (!repoUrl || !repoUrl.trim())) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `error-${Date.now()}`,
-          role: 'assistant',
-          content: '⚠️ Please provide a GitHub repository URL first.',
-          status: 'FAILED',
-          timestamp: new Date(),
-        },
-      ]);
-      return;
-    }
-
+  const handleSendMessage = async (content: string, messageRepoUrl: string) => {
     // Add user message
     const userMessage: ChatMessage = {
       id: `${Date.now()}-user`,
@@ -139,10 +124,11 @@ export const ChatContainer = () => {
         // Start new workflow with repoUrl
         const status = await workflowApi.startWorkflow({
           requirement: content,
-          repoUrl: repoUrl.trim(),
+          repoUrl: messageRepoUrl.trim(),
         });
         setConversationId(status.conversationId);
-        setShowRepoInput(false); // Hide input after starting
+        setRepoUrl(messageRepoUrl.trim()); // Store the repo URL
+        setIsRepoLocked(true); // Lock it for this chat session
         handleStatusUpdate(status);
       }
     } catch (error: any) {
@@ -176,8 +162,8 @@ export const ChatContainer = () => {
     setMessages([]);
     setConversationId(null);
     setIsProcessing(false);
-    setShowRepoInput(true);
     setRepoUrl('');
+    setIsRepoLocked(false);
   };
 
   const saveConversationToHistory = () => {
@@ -209,34 +195,22 @@ export const ChatContainer = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Repository URL Input */}
-      {showRepoInput && (
-        <div className="border-b border-gray-200 bg-white p-4">
-          <div className="max-w-4xl mx-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Repository URL <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              placeholder="https://github.com/username/repository"
-              className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            <p className="text-xs text-gray-500 mt-1.5">
-              Example: https://github.com/ssharma1011/rag-orchestrator
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* New Chat Button - Show when there are messages */}
-      {messages.length > 0 && (
-        <div className="bg-white border-b border-gray-200 px-4 py-2">
-          <div className="max-w-4xl mx-auto flex justify-end">
+      {/* Header with Current Repository and New Chat Button */}
+      {isRepoLocked && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200 px-6 py-3">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-2 rounded-lg shadow-sm">
+                <Github className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-medium">Working on</p>
+                <p className="text-sm font-semibold text-gray-800">{repoUrl}</p>
+              </div>
+            </div>
             <button
               onClick={handleNewChat}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm hover:shadow-md"
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all shadow-sm hover:shadow-md border border-blue-200"
             >
               <RefreshCw className="w-4 h-4" />
               New Chat
@@ -244,6 +218,7 @@ export const ChatContainer = () => {
           </div>
         </div>
       )}
+
       <MessageList messages={messages} />
       <ChatInput
         onSend={handleSendMessage}
@@ -253,6 +228,8 @@ export const ChatContainer = () => {
             ? 'Processing... Please wait'
             : 'Describe what you want to build or ask a question...'
         }
+        initialRepoUrl={repoUrl}
+        isRepoLocked={isRepoLocked}
       />
     </div>
   );
